@@ -3,5 +3,5 @@
 const response = require('../response');
 
 exports.index = (req, res) => {
-    response.status("Hello", res);
+    response.status("Hello from api", res);
 };
