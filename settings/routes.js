@@ -1,6 +1,8 @@
 'use strict'
 
 module.exports = (app) => {
+    const passport = require('passport')
+
     const indexController = require('../controller/indexController')
     const usersController = require('../controller/usersController')
     const eventsController = require('../controller/eventsController')
@@ -8,10 +10,11 @@ module.exports = (app) => {
     app.route('/').get(indexController.index)
 
     // Users routes
-    app.route('/users').get(usersController.users)
-    app.route('/users').post(usersController.add)
+    app.route('/api/users').get(passport.authenticate('jwt', {session: false}), usersController.users)
+    app.route('/api/users').post(usersController.add)
+    app.route('/api/auth/signin').get(usersController.signin)
 
     // Events routes
-    app.route('/events').get(eventsController.events)
-    app.route('/events').post(eventsController.add)
+    app.route('/api/events').get(passport.authenticate('jwt', {session: false}), eventsController.events)
+    app.route('/apievents').post(eventsController.add)
 }
