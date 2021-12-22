@@ -15,6 +15,7 @@ module.exports = (app) => {
     app.route('/api/auth/signin').get(usersController.signin)
 
     // Events routes
-    app.route('/api/events').get(passport.authenticate('jwt', {session: false}), eventsController.events)
-    app.route('/apievents').post(eventsController.add)
+    app.route('/api/events').get(eventsController.events)
+    app.route('/api/events').post(eventsController.add)
+    app.route('/api/events/remove').post(eventsController.remove)
 }

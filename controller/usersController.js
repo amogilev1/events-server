@@ -31,6 +31,23 @@ exports.user = (req, res) => {
     })
 }
 
+// PUT -- change password
+exports.changePassword = (req, res) => {
+    currentPassword = req.body.currentPassword
+    newPassword = req.body.newPassword
+    newPasswordConfirmation = req.body.newPasswordConfirmation
+
+    // Checking if two new passwords are the same
+    if (newPassword !== newPasswordConfirmation) {
+        response.status(400, {message: "Пароли не совпадают."}, res)
+        return
+    }
+
+    const salt = bcrypt.genSaltSync(SALT_VALUE)
+    const paswordHash = bcrypt.hashSync(initialPassword, salt)
+    sqlQuery = "UPDATE `Users` SET `password` = '"+req.body.newPassword+"' WHERE `id` = '"+ req.body.userId +"'"
+}
+
 // POST -- add new user
 exports.add = (req, res) => {
     // Trying to figure out if the user with the given email already exists
@@ -48,7 +65,7 @@ exports.add = (req, res) => {
             response.status(302, 'Already exists', res)
             return
         }
-        // We made sure that there is no user with the given email, so registering new user now
+        // We made sure that there is no user with the given email, now it's time to register new user
         // Encrypting user password
         const initialPassword = req.body.password
         const salt = bcrypt.genSaltSync(SALT_VALUE)
