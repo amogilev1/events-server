@@ -21,13 +21,14 @@ exports.users = (req, res) => {
 
 // GET -- get user by ID
 exports.user = (req, res) => {
-    db.query('select * from `Users` Where `id` = "' + req.body.id +'"', (error, rows, fields) => {
+    db.query('select * from `Users` where `id` = "' + req.headers.id +'"', (error, rows, fields) => {
         if (error) {
             console.log(error)
             response.status(400, error, res)
             return
         }
         response.status(200, rows, res)
+        console.log(rows)
     })
 }
 
@@ -71,7 +72,7 @@ exports.add = (req, res) => {
         const salt = bcrypt.genSaltSync(SALT_VALUE)
         const paswordHash = bcrypt.hashSync(initialPassword, salt)
 
-        const sqlQuery = "insert into `Users` (`name`, `email`, `password`) values ('" + req.body.name + "', '" + req.body.email + "', '" + paswordHash + "')"
+        const sqlQuery = "insert into `Users` (`name`, `second_name`, `email`, `password`) values ('" + req.body.name + "', '" + req.body.secondName + "', '" + req.body.email + "', '" + paswordHash + "')"
         db.query(sqlQuery, (error, results) => {
             if (error) {
                 console.log(error)
@@ -84,7 +85,7 @@ exports.add = (req, res) => {
     })
 }
 
-// GET -- Signin
+// POST -- Signin
 exports.signin = (req, res) => {
     db.query("SELECT * FROM `Users` WHERE email = '" +  req.body.email + "'", (error, rows, fields) => {
         if (error) {

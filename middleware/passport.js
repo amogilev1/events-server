@@ -10,14 +10,13 @@ const options = {
 module.exports = (passport) => {
     passport.use(new JwtStrategy(options, (payload, done) => {
         try {
-            db.query("SELECT * FROM `Users` WHERE `id` = '" + payload.userId +"'", (err, rows, fields) => {
+            db.query("SELECT * FROM `Users` WHERE `id` = '" + payload.userId + "'", (err, rows, fields) => {
                 if (err) {
                     console.log(err)
                     return
                 }
                 const user = rows
-                if (user)
-                {
+                if (user) {
                     done(null, user)
                 } else {
                     done(null, false)
