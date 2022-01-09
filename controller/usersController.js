@@ -28,7 +28,6 @@ exports.user = (req, res) => {
             return
         }
         response.status(200, rows, res)
-        console.log(rows)
     })
 }
 
@@ -72,7 +71,7 @@ exports.add = (req, res) => {
         const salt = bcrypt.genSaltSync(SALT_VALUE)
         const paswordHash = bcrypt.hashSync(initialPassword, salt)
 
-        const sqlQuery = "insert into `Users` (`name`, `second_name`, `email`, `password`) values ('" + req.body.name + "', '" + req.body.secondName + "', '" + req.body.email + "', '" + paswordHash + "')"
+        const sqlQuery = "insert into `Users` (`name`, `second_name`, `email`, `password`, `role_id`) values ('" + req.body.name + "', '" + req.body.secondName + "', '" + req.body.email + "', '" + paswordHash + "', '" + req.body.roleId + "')"
         db.query(sqlQuery, (error, results) => {
             if (error) {
                 console.log(error)
@@ -106,13 +105,27 @@ exports.signin = (req, res) => {
                 // Todo - get key from config
                 const token = jwt.sign({
                     userId: rw.id,
-                    userEmail: rw.email
+                    userEmail: rw.email,
+                    roleId: rw.role_id
                 }, 'jwt-key', {expiresIn: 120 * 120})
-                response.status(200, {token: token, message: 'Signed in.'}, res)
+                response.status(200, {token: token, message: 'Signed in.', userId: rw.id, roleId: rw.role_id}, res)
             } else {
                 response.status(400, {message: 'Wrong password.'}, res)
             }
             return true
         })
+    })
+}
+
+// POST -- remove user by id
+exports.remove = (req, res) => {
+    const sqlQuery = "DELETE FROM `Users` WHERE `id` = '" + req.body.eventId + "'"
+    db.query(sqlQuery, (error, results) => {
+        if (error) {
+            console.log(error)
+            response.status(400, error, res)
+            return
+        }
+        response.status(200, results, res)
     })
 }

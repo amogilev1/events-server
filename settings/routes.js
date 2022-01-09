@@ -14,11 +14,13 @@ module.exports = (app) => {
     // Users routes
     app.route('/api/users').get(passport.authenticate('jwt', {session: false}), usersController.users)
     app.route('/api/users').post(usersController.add)
+    app.route('/api/users/remove').post(usersController.remove)
     app.route('/api/auth/signin').post(usersController.signin)
     app.route('/api/user').get(passport.authenticate('jwt', {session: false}), usersController.user)
 
     // Events routes
     app.route('/api/events').get(eventsController.events)
+    app.route('/api/events/count').get(eventsController.count)
     app.route('/api/events').post(passport.authenticate('jwt', {session: false}), eventsController.add)
     app.route('/api/events/remove').post(eventsController.remove)
     app.route('/api/events/confirm').post(eventsController.confirm)

@@ -24,8 +24,6 @@ exports.eventTemplate = (req, res) => {
             return
         }
         response.status(200, rows, res)
-        console.log(req.headers.id)
-        console.log(rows)
     })
 }
 

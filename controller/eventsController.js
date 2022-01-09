@@ -4,14 +4,51 @@ const response = require('../response')
 const db = require('../settings/db')
 const jwt = require('jsonwebtoken')
 
+const maxElementsOnPage = 10
+
+const getSqlStringByDateFilter = (dateFilter) => {
+    if (dateFilter === 'today') {
+        return 'AND DATE(`timestamp`) = CURDATE()'
+    }
+    if (dateFilter === 'week') {
+        return 'AND YEARWEEK(`timestamp`, 1) = YEARWEEK(CURDATE(), 1)'
+    }
+    if (dateFilter === 'month') {
+        return 'AND MONTH(`timestamp`) = MONTH(CURDATE())'
+    }
+    return ''
+}
+
 // GET -- get all events
 exports.events = (req, res) => {
-    db.query('SELECT * FROM `Events` ORDER BY `timestamp` DESC', (error, rows, fields) => {
+    const workplaceFilter = req.headers.workplace != 'all' ? 'WHERE `workplace_id` = "' + req.headers.workplace +'"' : "WHERE `workplace_id` LIKE '%'" 
+    const dateFilter = getSqlStringByDateFilter(req.headers.test)
+
+    const page = req.headers.page
+    const offset = maxElementsOnPage * (page - 1)
+
+    db.query("SELECT * FROM `Events` " + workplaceFilter + " " + dateFilter + " ORDER BY `timestamp` DESC LIMIT " + offset + ", " + maxElementsOnPage + "", (error, rows, fields) => {
         if (error) {
             console.log(error)
             response.status(400, error, res)
         } else {
             response.status(200, rows, res)
+        }
+    })
+}
+
+// GET -- get pages count
+exports.count = (req, res) => {
+    const workplaceFilter = req.headers.workplace != 'all' ? 'WHERE `workplace_id` = "' + req.headers.workplace +'"' : "WHERE `workplace_id` LIKE '%'" 
+    const dateFilter = getSqlStringByDateFilter(req.headers.test)
+
+    db.query("SELECT `id` FROM `Events` " + workplaceFilter + " " + dateFilter + " ORDER BY `timestamp` DESC", (error, rows, fields) => {
+        if (error) {
+            console.log(error)
+            response.status(400, error, res)
+        } else {
+            const pages = Math.ceil(rows.length / maxElementsOnPage)
+            response.status(200, pages, res)
         }
     })
 }
