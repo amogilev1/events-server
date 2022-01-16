@@ -28,7 +28,7 @@ exports.eventTemplate = (req, res) => {
 }
 
 // POST -- add new event template
-exports.add = (req, res) => {
+exports.add = async (req, res) => {
     const sqlQuery = "INSERT INTO `EventTemplates` (`event_name`) VALUES ('"+ req.body.eventName +"')"
     db.query(sqlQuery, (error, results) => {
         if (error) {

@@ -20,10 +20,12 @@ module.exports = (app) => {
 
     // Events routes
     app.route('/api/events').get(eventsController.events)
+    app.route('/api/event').get(eventsController.event)
     app.route('/api/events/count').get(eventsController.count)
     app.route('/api/events').post(passport.authenticate('jwt', {session: false}), eventsController.add)
     app.route('/api/events/remove').post(eventsController.remove)
     app.route('/api/events/confirm').post(eventsController.confirm)
+    app.route('/api/events/update').put(eventsController.update)
 
     // Event templates routes
     app.route('/api/eventTemplates').get(eventTemplatesController.eventTemplates)

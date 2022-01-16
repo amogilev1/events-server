@@ -4,7 +4,7 @@ const response = require('../response')
 const db = require('../settings/db')
 const jwt = require('jsonwebtoken')
 
-const maxElementsOnPage = 10
+const maxElementsOnPage = 20
 
 const getSqlStringByDateFilter = (dateFilter) => {
     if (dateFilter === 'today') {
@@ -34,6 +34,18 @@ exports.events = (req, res) => {
         } else {
             response.status(200, rows, res)
         }
+    })
+}
+
+// GET -- get event by id
+exports.event = (req, res) => {
+    const sqlQuery = "SELECT * FROM `Events` WHERE `id` = '" + req.headers.id + "'"
+    db.query(sqlQuery, (error, rows, fields) => {
+        if (error) {
+            response.status(400, error, res)
+            return
+        }
+        response.status(200, rows, res)
     })
 }
 
@@ -77,7 +89,7 @@ exports.add = (req, res) => {
     }
 
 
-    const sqlQuery = "INSERT INTO `Events` (`event_template_id`, `additional_info`, `timestamp`, `workplace_id`, `user_id`, `measure_id`) VALUES ('" + req.body.eventTemplateId + "' , '" + req.body.additionalInfo + "', '" + newDate + "', '" + req.body.workplaceId + "', '"+ tokenPayload.userId +"', '"+ req.body.measureId +"')"
+    const sqlQuery = "INSERT INTO `Events` (`event_template_id`, `additional_info`, `timestamp`, `workplace_id`, `user_id`, `measure_id`, `close_info`) VALUES ('" + req.body.eventTemplateId + "' , '" + req.body.additionalInfo + "', '" + newDate + "', '" + req.body.workplaceId + "', '"+ tokenPayload.userId +"', '"+ req.body.measureId +"', '"+ req.body.closeInfo +"')"
     db.query(sqlQuery, (error, results) => {
         if (error) {
             console.log(error)
@@ -96,6 +108,19 @@ exports.remove = (req, res) => {
         if (error) {
             console.log(error)
             response.status(400, error, res)
+            return
+        }
+        response.status(200, results, res)
+    })
+}
+
+// PUT -- update event
+exports.update = (req, res) => {
+    const sqlQuery = "UPDATE `Events` SET `event_template_id` = '" + req.body.eventTemplateId + "', `measure_id` = '" + req.body.measureId + "', `additional_info` = '" + req.body.additionalInfo + "', `workplace_id` = '" + req.body.workplaceId + "', `close_info` = '" + req.body.closeInfo + "' WHERE `id` = '" + req.body.id + "'"
+    db.query(sqlQuery, (error, results) => {
+        if (error) {
+            response.status(400, error, res)
+            console.log(error)
             return
         }
         response.status(200, results, res)
