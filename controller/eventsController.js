@@ -3,6 +3,7 @@
 const response = require('../response')
 const db = require('../settings/db')
 const jwt = require('jsonwebtoken')
+const moment = require('moment')
 
 const maxElementsOnPage = 20
 
@@ -71,8 +72,7 @@ exports.add = (req, res) => {
     token = token.replace("Bearer ", "")
     const tokenPayload = jwt.verify(token, 'jwt-key')
 
-    const date = new Date()
-    const newDate = date.toISOString().slice(0, 19).replace('T', ' ')
+    const newDate = moment().format().slice(0, 19).replace('T', ' ')
 
     if (req.body.id) {
         // Trying to find event template by id in the request body
