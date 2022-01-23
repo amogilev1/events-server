@@ -33,19 +33,20 @@ exports.user = (req, res) => {
 
 // PUT -- change password
 exports.changePassword = (req, res) => {
-    currentPassword = req.body.currentPassword
-    newPassword = req.body.newPassword
-    newPasswordConfirmation = req.body.newPasswordConfirmation
-
-    // Checking if two new passwords are the same
-    if (newPassword !== newPasswordConfirmation) {
-        response.status(400, {message: "Пароли не совпадают."}, res)
-        return
-    }
+    const newPassword = req.body.newPassword
 
     const salt = bcrypt.genSaltSync(SALT_VALUE)
-    const paswordHash = bcrypt.hashSync(initialPassword, salt)
-    sqlQuery = "UPDATE `Users` SET `password` = '"+req.body.newPassword+"' WHERE `id` = '"+ req.body.userId +"'"
+    const paswordHash = bcrypt.hashSync(newPassword, salt)
+    const sqlQuery = "UPDATE `Users` SET `password` = '"+paswordHash+"' WHERE `id` = '"+ req.body.userId +"'"
+
+    db.query(sqlQuery, (error, results) => {
+        if (error) {
+            console.log(error)
+            response.status(400, error, res)
+            return
+        }
+        response.status(200, results, res)
+    })
 }
 
 // POST -- add new user
