@@ -109,7 +109,7 @@ exports.signin = (req, res) => {
                     userEmail: rw.email,
                     roleId: rw.role_id
                 }, 'jwt-key', {expiresIn: 120 * 120})
-                response.status(200, {token: token, message: 'Signed in.', userId: rw.id, roleId: rw.role_id}, res)
+                response.status(200, {token: token, message: 'Signed in.', userId: rw.id, roleId: rw.role_id, name: rw.name, lastname: rw.second_name}, res)
             } else {
                 response.status(400, {message: 'Wrong password.'}, res)
             }
